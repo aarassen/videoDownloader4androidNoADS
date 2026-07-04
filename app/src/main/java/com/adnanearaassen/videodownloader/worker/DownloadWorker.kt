@@ -2,7 +2,6 @@ package com.adnanearaassen.videodownloader.worker
 
 import android.content.Context
 import android.content.pm.ServiceInfo
-import android.os.Build
 import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
@@ -26,6 +25,7 @@ import java.io.File
 import kotlin.coroutines.resume
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Runs a single download end-to-end using FFmpeg, as a WorkManager foreground worker so
@@ -181,10 +181,10 @@ class DownloadWorker(
         // the DB on every statistics callback (which can fire many times per second).
         val sampler = launch {
             while (isActive) {
-                delay(PROGRESS_INTERVAL_MS)
+                delay(PROGRESS_INTERVAL_MS.milliseconds)
                 val s = latestStats.value ?: continue
                 val elapsedWallSec = (System.nanoTime() - startWall) / 1_000_000_000.0
-                val processedMs = s.time.toDouble()
+                val processedMs = s.time
                 val size = s.size.coerceAtLeast(0)
 
                 val progress = if (durationMs > 0) {
@@ -252,12 +252,9 @@ class DownloadWorker(
         File(File(applicationContext.filesDir, "downloads"), "$id.mp4")
 
     private fun foregroundInfo(id: String?, notification: android.app.Notification): ForegroundInfo {
+        // minSdk is 29, so the typed ForegroundInfo constructor is always available.
         val notifId = (id?.hashCode() ?: DEFAULT_NOTIF_ID)
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            ForegroundInfo(notifId, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC)
-        } else {
-            ForegroundInfo(notifId, notification)
-        }
+        return ForegroundInfo(notifId, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC)
     }
 
     /** Internal result of one FFmpeg pass. */

@@ -110,8 +110,8 @@ fun BrowserScreen(
             webChromeClient = DetectingWebChromeClient(
                 onProgress = vm::onProgress,
                 onTitle = vm::onTitle,
-                onShowCustomView = { view, cb -> customView = view; customViewCallback = cb },
-                onHideCustomView = {
+                onEnterFullscreen = { view, cb -> customView = view; customViewCallback = cb },
+                onExitFullscreen = {
                     customViewCallback?.onCustomViewHidden()
                     customView = null
                     customViewCallback = null
@@ -285,8 +285,7 @@ private fun DetectionFab(count: Int, analyzing: Boolean, onClick: () -> Unit) {
 private fun WebView.applyBrowserSettings() {
     settings.apply {
         javaScriptEnabled = true
-        domStorageEnabled = true            // localStorage / sessionStorage
-        databaseEnabled = true
+        domStorageEnabled = true            // localStorage / sessionStorage (covers WebSQL too)
         javaScriptCanOpenWindowsAutomatically = true
         mediaPlaybackRequiresUserGesture = false // allow autoplay for detection
         loadWithOverviewMode = true

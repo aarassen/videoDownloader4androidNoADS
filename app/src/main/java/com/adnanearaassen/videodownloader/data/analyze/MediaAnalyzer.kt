@@ -186,8 +186,8 @@ class MediaAnalyzer(
             if (!resp.isSuccessful) {
                 throw IOException(httpErrorMessage(resp.code))
             }
-            return resp.body?.string()
-                ?: throw IOException("Empty response body for playlist")
+            // OkHttp 5: Response.body is non-null.
+            return resp.body.string()
         }
     }
 
