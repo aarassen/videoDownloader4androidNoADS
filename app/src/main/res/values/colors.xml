@@ -7,4 +7,9 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Brand palette (matches the launcher icon / splash) -->
+    <color name="brand_indigo">#FF4338CA</color>
+    <color name="brand_violet">#FF6D28D9</color>
+    <color name="splash_background">#FF4338CA</color>
 </resources>

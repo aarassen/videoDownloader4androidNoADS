@@ -4,7 +4,9 @@ import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
 import android.os.Environment
+import android.provider.DocumentsContract
 import android.provider.MediaStore
+import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
 import com.adnanearaassen.videodownloader.data.settings.SettingsRepository
 import kotlinx.coroutines.Dispatchers
@@ -113,6 +115,28 @@ class MediaStoreSaver(
             runCatching { resolver.delete(uri, null, null) }
             throw e
         }
+    }
+
+    /**
+     * Deletes the actual video file the given [uriString] points at (from the previous
+     * [save]). Handles both destinations:
+     *  - MediaStore (`content://media/...`): deleted via the ContentResolver. Since our
+     *    app created the entry, no user consent dialog is needed.
+     *  - SAF document (`content://<provider>/tree/.../document/...`): deleted via
+     *    DocumentsContract using our persisted write permission.
+     *
+     * Returns true if a file was removed. Failures (already gone, revoked access) are
+     * swallowed and return false — the caller still drops the list record either way.
+     */
+    suspend fun deleteFile(uriString: String): Boolean = withContext(Dispatchers.IO) {
+        runCatching {
+            val uri = uriString.toUri()
+            if (uri.authority == MediaStore.AUTHORITY) {
+                context.contentResolver.delete(uri, null, null) > 0
+            } else {
+                DocumentsContract.deleteDocument(context.contentResolver, uri)
+            }
+        }.getOrDefault(false)
     }
 
     private fun ensureExtension(name: String): String =

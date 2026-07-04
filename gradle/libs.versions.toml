@@ -21,6 +21,7 @@ coroutines = "1.11.0"
 okhttp = "5.4.0"
 lifecycleViewmodelCompose = "2.11.0"
 documentfile = "1.1.0"
+coreSplashscreen = "1.0.1"
 # FFmpegKit "full-gpl" ships libx264 (GPL) which we need for H.264 re-encoding.
 # The original com.arthenica artifacts were retired in 2025; we use Anton Karpenko's
 # maintained Maven Central republish (FFmpeg 8.1.1). This fork uses the
@@ -69,6 +70,9 @@ okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhtt
 
 # DocumentFile: write finished MP4s into a user-picked SAF folder tree
 androidx-documentfile = { group = "androidx.documentfile", name = "documentfile", version.ref = "documentfile" }
+
+# Splash screen (Android 12 SplashScreen API + compat back to our minSdk)
+androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" }
 
 # FFmpegKit (HLS download, TS merge, remux, transcode) — Karpenko's maintained fork.
 ffmpeg-kit = { group = "com.antonkarpenko", name = "ffmpeg-kit-full-gpl", version.ref = "ffmpegKit" }

@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- Base theme the Compose UI runs under (after the splash is dismissed). -->
     <style name="Theme.Videodownloader" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <!--
+        Launch theme: the Android 12+ SplashScreen API (with core-splashscreen back-compat).
+        Shows the brand mark on the brand background, then hands off to Theme.Videodownloader.
+    -->
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/splash_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash</item>
+        <item name="postSplashScreenTheme">@style/Theme.Videodownloader</item>
+    </style>
 </resources>

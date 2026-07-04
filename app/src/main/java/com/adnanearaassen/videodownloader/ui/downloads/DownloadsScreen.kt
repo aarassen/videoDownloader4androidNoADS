@@ -192,19 +192,19 @@ private fun DownloadCard(
                     }
                     DownloadStatus.PAUSED -> {
                         ActionButton(Icons.Filled.PlayArrow, "Resume", onResume)
-                        ActionButton(Icons.Filled.Delete, "Remove", onRemove)
+                        ActionButton(Icons.Filled.Delete, "Delete", onRemove)
                     }
                     DownloadStatus.FAILED -> {
                         ActionButton(Icons.Filled.Refresh, "Retry", onRetry)
-                        ActionButton(Icons.Filled.Delete, "Remove", onRemove)
+                        ActionButton(Icons.Filled.Delete, "Delete", onRemove)
                     }
                     DownloadStatus.COMPLETED -> {
                         ActionButton(Icons.Filled.PlayArrow, "Play", onOpen)
-                        ActionButton(Icons.Filled.Delete, "Remove", onRemove)
+                        ActionButton(Icons.Filled.Delete, "Delete", onRemove)
                     }
                     DownloadStatus.CANCELLED -> {
                         ActionButton(Icons.Filled.Refresh, "Retry", onRetry)
-                        ActionButton(Icons.Filled.Delete, "Remove", onRemove)
+                        ActionButton(Icons.Filled.Delete, "Delete", onRemove)
                     }
                 }
             }

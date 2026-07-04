@@ -16,6 +16,10 @@ interface DownloadDao {
     @Query("SELECT * FROM downloads WHERE id = :id")
     suspend fun getById(id: String): DownloadEntity?
 
+    /** Completed downloads (those with a saved file), for bulk file cleanup. */
+    @Query("SELECT * FROM downloads WHERE status = 'COMPLETED'")
+    suspend fun getCompleted(): List<DownloadEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(entity: DownloadEntity): Long
 

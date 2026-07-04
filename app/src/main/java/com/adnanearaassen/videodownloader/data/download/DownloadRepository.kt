@@ -25,6 +25,7 @@ import java.util.UUID
 class DownloadRepository(
     private val dao: DownloadDao,
     private val workManager: WorkManager,
+    private val mediaStoreSaver: MediaStoreSaver,
 ) {
 
     fun observeAll(): Flow<List<DownloadEntity>> = dao.observeAll()
@@ -80,13 +81,27 @@ class DownloadRepository(
         workManager.cancelUniqueWork(workName(id))
     }
 
-    /** Remove a download record entirely (also cancels any running work). */
+    /**
+     * Remove a download: cancels any running work, deletes the actual video file from the
+     * phone (MediaStore or the user's chosen folder), then drops the list record.
+     */
     suspend fun remove(id: String) {
         workManager.cancelUniqueWork(workName(id))
+        val entity = dao.getById(id)
+        entity?.outputUri?.let { mediaStoreSaver.deleteFile(it) }
         dao.delete(id)
     }
 
-    suspend fun clearFinished() = dao.clearFinished()
+    /**
+     * Clears finished entries from the list. Also deletes the underlying files for
+     * completed downloads, so "clear" frees storage rather than orphaning videos.
+     */
+    suspend fun clearFinished() {
+        dao.getCompleted().forEach { entity ->
+            entity.outputUri?.let { mediaStoreSaver.deleteFile(it) }
+        }
+        dao.clearFinished()
+    }
 
     // ---- WorkManager plumbing ---------------------------------------------
 

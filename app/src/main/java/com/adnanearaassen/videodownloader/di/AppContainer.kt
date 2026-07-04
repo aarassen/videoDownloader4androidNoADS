@@ -58,6 +58,6 @@ class AppContainer(private val app: Context) {
     val workManager: WorkManager by lazy { WorkManager.getInstance(app) }
 
     val downloadRepository: DownloadRepository by lazy {
-        DownloadRepository(downloadDao, workManager)
+        DownloadRepository(downloadDao, workManager, mediaStoreSaver)
     }
 }
