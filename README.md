@@ -1,4 +1,4 @@
-# Video Downloader
+# Video Downloader with no ads
 
 An Android app that works like a browser with a built-in video detector. The user opens a
 webpage in an in-app browser, plays/interacts with the video, and the app automatically
