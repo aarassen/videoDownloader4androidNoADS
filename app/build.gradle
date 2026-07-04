@@ -1,0 +1,108 @@
+plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ksp)
+}
+
+android {
+    namespace 'com.adnanearaassen.videodownloader'
+    compileSdk {
+        version = release(36) {
+            minorApiLevel = 1
+        }
+    }
+
+    defaultConfig {
+        applicationId "com.adnanearaassen.videodownloader"
+        // Android 10 (API 29) and up, as required. Scoped storage / MediaStore
+        // behaviour below is written against the API 29+ contract.
+        minSdk 29
+        targetSdk 36
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        // FFmpegKit ships native binaries for these ABIs. Restricting the set keeps
+        // the APK size sane; add/remove ABIs here as needed.
+        ndk {
+            abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86_64'
+        }
+    }
+
+    buildTypes {
+        release {
+            optimization {
+                enable false
+            }
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+    buildFeatures {
+        compose true
+    }
+
+    ksp {
+        arg("room.generateKotlin", "true")
+    }
+
+    // FFmpegKit bundles several .so files; avoid merge conflicts if another dep
+    // ships the same libs.
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging true
+        }
+        resources {
+            excludes += ['/META-INF/{AL2.0,LGPL2.1}']
+        }
+    }
+}
+
+dependencies {
+    implementation platform(libs.androidx.compose.bom)
+    implementation libs.androidx.activity.compose
+    implementation libs.androidx.compose.material3
+    implementation libs.androidx.compose.material.icons.extended
+    implementation libs.androidx.compose.ui
+    implementation libs.androidx.compose.ui.graphics
+    implementation libs.androidx.compose.ui.tooling.preview
+    implementation libs.androidx.core.ktx
+    implementation libs.androidx.lifecycle.runtime.ktx
+    implementation libs.androidx.lifecycle.runtime.compose
+    implementation libs.androidx.lifecycle.viewmodel.compose
+
+    // Navigation
+    implementation libs.androidx.navigation.compose
+
+    // WorkManager (background downloads)
+    implementation libs.androidx.work.runtime.ktx
+
+    // Room
+    implementation libs.androidx.room.runtime
+    implementation libs.androidx.room.ktx
+    ksp libs.androidx.room.compiler
+
+    // Coroutines
+    implementation libs.kotlinx.coroutines.android
+
+    // Networking
+    implementation libs.okhttp
+
+    // SAF folder writing (user-picked download folder)
+    implementation libs.androidx.documentfile
+
+    // FFmpeg
+    implementation libs.ffmpeg.kit
+
+    testImplementation libs.junit
+    testImplementation libs.kotlinx.coroutines.android
+    androidTestImplementation platform(libs.androidx.compose.bom)
+    androidTestImplementation libs.androidx.compose.ui.test.junit4
+    androidTestImplementation libs.androidx.espresso.core
+    androidTestImplementation libs.androidx.junit
+    debugImplementation libs.androidx.compose.ui.test.manifest
+    debugImplementation libs.androidx.compose.ui.tooling
+}
