@@ -15,7 +15,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission
         android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC"
-        tools:ignore="ForegroundServicePermission" />
+        tools:ignore="ForegroundServicePermission,ForegroundServiceType" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <!-- Notifications (runtime permission on Android 13+) for download progress -->

@@ -88,10 +88,6 @@ class BrowserViewModel(
         }
     }
 
-    fun onNavStateChanged(canGoBack: Boolean, canGoForward: Boolean) {
-        _state.update { it.copy(canGoBack = canGoBack, canGoForward = canGoForward) }
-    }
-
     /**
      * Called from the WebView's request interceptor (off the main thread) for every
      * network request. Classifies the URL and, if it's media, records it with the
