@@ -10,9 +10,9 @@ import kotlinx.coroutines.flow.update
  * Process-wide store of media URLs detected in the current browsing session.
  *
  * The WebView layer writes here as requests fly by; the browser UI observes
- * [detected] to drive the animated download FAB and its badge count. Kept as a
- * [Singleton] so the interceptor (background thread) and the Compose UI share one
- * source of truth.
+ * [detected] to drive the animated download FAB and its badge count. Held as a single
+ * shared instance (via the app container) so the interceptor (background thread) and the
+ * Compose UI share one source of truth.
  */
 class DetectionRepository {
 

@@ -1,7 +1,6 @@
 package com.adnanearaassen.videodownloader.ui.downloads
 
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,9 +38,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
@@ -251,7 +250,7 @@ private fun statusLine(item: DownloadEntity): String = when (item.status) {
 
 /** Opens a completed MP4 in the system video player. */
 private fun openVideo(context: android.content.Context, uri: String?) {
-    val target = uri?.let { Uri.parse(it) } ?: return
+    val target = uri?.toUri() ?: return
     val intent = Intent(Intent.ACTION_VIEW).apply {
         setDataAndType(target, "video/mp4")
         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)

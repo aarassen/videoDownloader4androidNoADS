@@ -28,7 +28,6 @@ class DownloadRepository(
 ) {
 
     fun observeAll(): Flow<List<DownloadEntity>> = dao.observeAll()
-    fun observe(id: String): Flow<DownloadEntity?> = dao.observe(id)
 
     /** Creates a queued task for [format] and starts the background worker. */
     suspend fun enqueue(format: MediaFormat, title: String): String {

@@ -4,7 +4,6 @@ import com.adnanearaassen.videodownloader.data.model.AnalysisResult
 import com.adnanearaassen.videodownloader.data.model.DetectedMedia
 import com.adnanearaassen.videodownloader.data.model.FormatKind
 import com.adnanearaassen.videodownloader.data.model.MediaFormat
-import com.adnanearaassen.videodownloader.data.model.MediaType
 import com.adnanearaassen.videodownloader.data.playlist.CodecNames
 import com.adnanearaassen.videodownloader.data.playlist.HlsPlaylist
 import com.adnanearaassen.videodownloader.data.playlist.HlsPlaylistParser

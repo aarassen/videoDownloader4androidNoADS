@@ -4,7 +4,7 @@ package com.adnanearaassen.videodownloader.data.download
  * Builds FFmpeg argument lists for the two download modes.
  *
  * We always produce an MP4. The key decision — **remux vs. re-encode** — is made by the
- * caller (the worker, after probing the real codecs) and passed in as [reencode]:
+ * caller (the worker, after probing the real codecs) and passed in as the `reencode` flag:
  *
  *  - **Remux** (`-c copy`): stream-copies the existing video/audio into an MP4 container.
  *    Near-instant, no quality loss. Used when the source is already H.264/H.265 + AAC.
@@ -53,10 +53,11 @@ object FfmpegCommandBuilder {
 
         // Input 1 (optional): the separate audio rendition for demuxed HLS. The same
         // headers/whitelist are repeated because input options apply per-input.
-        val hasSeparateAudio = !audioUrl.isNullOrBlank()
-        if (hasSeparateAudio) {
+        val audio = audioUrl?.takeIf { it.isNotBlank() }
+        val hasSeparateAudio = audio != null
+        if (audio != null) {
             addInputOptions(headers, isHls)
-            add("-i"); add(audioUrl!!)
+            add("-i"); add(audio)
         }
 
         // --- stream mapping ---

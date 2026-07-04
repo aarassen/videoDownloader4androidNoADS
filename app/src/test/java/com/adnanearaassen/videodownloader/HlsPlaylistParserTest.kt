@@ -52,11 +52,11 @@ class HlsPlaylistParserTest {
         assertEquals(2, result.segments.size)
         assertEquals(17.5, result.totalDurationSec, 0.001)
         assertTrue(result.isComplete)
-        assertNotNull(result.key)
-        assertEquals("AES-128", result.key!!.method)
-        assertTrue(result.key!!.isEncrypted)
-        assertTrue(result.key!!.isSupported)
-        assertEquals("https://cdn.example.com/key.bin", result.key!!.uri)
+        val key = requireNotNull(result.key)
+        assertEquals("AES-128", key.method)
+        assertTrue(key.isEncrypted)
+        assertTrue(key.isSupported)
+        assertEquals("https://cdn.example.com/key.bin", key.uri)
     }
 
     @Test

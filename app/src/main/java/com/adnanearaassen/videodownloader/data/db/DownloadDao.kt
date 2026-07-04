@@ -4,7 +4,6 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Update
 import com.adnanearaassen.videodownloader.data.model.DownloadStatus
 import kotlinx.coroutines.flow.Flow
 
@@ -15,16 +14,10 @@ interface DownloadDao {
     fun observeAll(): Flow<List<DownloadEntity>>
 
     @Query("SELECT * FROM downloads WHERE id = :id")
-    fun observe(id: String): Flow<DownloadEntity?>
-
-    @Query("SELECT * FROM downloads WHERE id = :id")
     suspend fun getById(id: String): DownloadEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(entity: DownloadEntity): Long
-
-    @Update
-    suspend fun update(entity: DownloadEntity): Int
 
     /**
      * Fine-grained progress update. Kept as a single UPDATE so the frequent writes

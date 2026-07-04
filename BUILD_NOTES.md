@@ -15,10 +15,9 @@ needed for the H.264 re-encode path.
 in 2025, so this project depends on **Anton Karpenko's maintained republish**, which is
 on **Maven Central** (already configured):
 
-```toml
-# gradle/libs.versions.toml
-ffmpegKit = "2.2.0"   # FFmpeg 8.1.1
-ffmpeg-kit = { group = "com.antonkarpenko", name = "ffmpeg-kit-full-gpl", version.ref = "ffmpegKit" }
+```
+# gradle/libs.versions.toml  — FFmpeg 8.1.1
+ffmpeg-kit = { group = "com.antonkarpenko", name = "ffmpeg-kit-full-gpl", version = "2.2.0" }
 ```
 
 Crucially, this fork uses the **`com.antonkarpenko.ffmpegkit`** Java package, so

@@ -2,6 +2,7 @@ package com.adnanearaassen.videodownloader.data.settings
 
 import android.content.Context
 import android.net.Uri
+import androidx.core.content.edit
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,12 +26,12 @@ class SettingsRepository(context: Context) {
     val folderUri: StateFlow<Uri?> = _folderUri.asStateFlow()
 
     fun setCustomFolder(uri: Uri) {
-        prefs.edit().putString(KEY_TREE_URI, uri.toString()).apply()
+        prefs.edit { putString(KEY_TREE_URI, uri.toString()) }
         _folderUri.value = uri
     }
 
     fun clearCustomFolder() {
-        prefs.edit().remove(KEY_TREE_URI).apply()
+        prefs.edit { remove(KEY_TREE_URI) }
         _folderUri.value = null
     }
 

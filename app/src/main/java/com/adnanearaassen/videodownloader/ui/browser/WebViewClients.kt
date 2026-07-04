@@ -61,8 +61,9 @@ class DetectingWebViewClient(
 class DetectingWebChromeClient(
     private val onProgress: (Int) -> Unit,
     private val onTitle: (String?) -> Unit,
-    private val onShowCustomView: (View, WebChromeClient.CustomViewCallback) -> Unit,
-    private val onHideCustomView: () -> Unit,
+    // Named distinctly from the overridden methods below to avoid shadowing them.
+    private val onEnterFullscreen: (View, CustomViewCallback) -> Unit,
+    private val onExitFullscreen: () -> Unit,
 ) : WebChromeClient() {
 
     override fun onProgressChanged(view: WebView?, newProgress: Int) {
@@ -74,10 +75,10 @@ class DetectingWebChromeClient(
     }
 
     override fun onShowCustomView(view: View?, callback: CustomViewCallback?) {
-        if (view != null && callback != null) onShowCustomView(view, callback)
+        if (view != null && callback != null) onEnterFullscreen(view, callback)
     }
 
     override fun onHideCustomView() {
-        onHideCustomView()
+        onExitFullscreen()
     }
 }

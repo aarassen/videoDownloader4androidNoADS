@@ -39,7 +39,7 @@ class AppContainer(private val app: Context) {
 
     val database: AppDatabase by lazy {
         Room.databaseBuilder(app, AppDatabase::class.java, AppDatabase.NAME)
-            .fallbackToDestructiveMigration()
+            .fallbackToDestructiveMigration(dropAllTables = true)
             .build()
     }
 
