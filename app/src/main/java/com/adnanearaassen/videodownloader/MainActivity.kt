@@ -1,6 +1,7 @@
 package com.adnanearaassen.videodownloader
 
 import android.Manifest
+import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -12,6 +13,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -25,17 +28,54 @@ import com.adnanearaassen.videodownloader.ui.settings.SettingsScreen
 import com.adnanearaassen.videodownloader.ui.theme.VideodownloaderTheme
 
 class MainActivity : ComponentActivity() {
+
+    // Holds a URL delivered via a Share (ACTION_SEND) or VIEW intent, observed by Compose.
+    private val incomingUrl: MutableState<String?> = mutableStateOf(null)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         // Show the system splash screen until the first frame is ready.
         installSplashScreen()
         super.onCreate(savedInstanceState)
+        incomingUrl.value = extractSharedUrl(intent)
         enableEdgeToEdge()
         setContent {
             VideodownloaderTheme {
                 RequestNotificationPermission()
-                AppNavHost()
+                AppNavHost(incomingUrl)
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        // A link shared while the app is already open.
+        extractSharedUrl(intent)?.let { incomingUrl.value = it }
+    }
+}
+
+/**
+ * Pulls a URL out of an incoming intent: the shared text of an ACTION_SEND, or the data
+ * of an ACTION_VIEW. Returns the first http(s) URL found (or a bare domain), else null.
+ */
+private fun extractSharedUrl(intent: Intent?): String? {
+    if (intent == null) return null
+    val raw = when (intent.action) {
+        Intent.ACTION_SEND ->
+            if (intent.type == "text/plain") intent.getStringExtra(Intent.EXTRA_TEXT) else null
+        Intent.ACTION_VIEW -> intent.dataString
+        else -> null
+    } ?: return null
+    return firstUrlOrNull(raw)
+}
+
+private fun firstUrlOrNull(text: String): String? {
+    Regex("""https?://\S+""").find(text)?.let { return it.value }
+    val trimmed = text.trim()
+    return if (trimmed.isNotEmpty() && trimmed.none { it.isWhitespace() } && '.' in trimmed) {
+        trimmed
+    } else {
+        null
     }
 }
 
@@ -54,7 +94,7 @@ private fun RequestNotificationPermission() {
 }
 
 @Composable
-private fun AppNavHost() {
+private fun AppNavHost(sharedUrl: MutableState<String?>) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Destinations.HOME) {
 
@@ -63,6 +103,8 @@ private fun AppNavHost() {
                 onBrowse = { url -> navController.navigate(Destinations.browser(url)) },
                 onOpenDownloads = { navController.navigate(Destinations.DOWNLOADS) },
                 onOpenSettings = { navController.navigate(Destinations.SETTINGS) },
+                sharedUrl = sharedUrl.value,
+                onSharedUrlConsumed = { sharedUrl.value = null },
             )
         }
 

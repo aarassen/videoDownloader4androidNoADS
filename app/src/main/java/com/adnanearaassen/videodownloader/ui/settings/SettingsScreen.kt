@@ -1,8 +1,12 @@
 package com.adnanearaassen.videodownloader.ui.settings
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.DocumentsContract
+import android.webkit.CookieManager
+import android.webkit.WebStorage
+import android.webkit.WebView
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -15,21 +19,27 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.DeleteSweep
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -37,6 +47,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.adnanearaassen.videodownloader.ui.rememberAppContainer
+import kotlinx.coroutines.launch
 
 /**
  * Settings — lets the user choose the download destination folder using the Storage
@@ -50,6 +61,8 @@ fun SettingsScreen(onBack: () -> Unit) {
     val settings = rememberAppContainer().settingsRepository
     val folderUri by settings.folderUri.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     // SAF folder picker. On success we persist the grant so it survives process death.
     val picker = rememberLauncherForActivityResult(
@@ -74,6 +87,7 @@ fun SettingsScreen(onBack: () -> Unit) {
                 },
             )
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { padding ->
         Column(
             modifier = Modifier
@@ -142,7 +156,50 @@ fun SettingsScreen(onBack: () -> Unit) {
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+
+            // --- Browser data ---
+            Text(
+                "Browser",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+            )
+            Text(
+                "Clear cookies, cache, history and site storage saved by the in-app browser.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            OutlinedButton(
+                onClick = {
+                    clearBrowserData(context)
+                    scope.launch { snackbarHostState.showSnackbar("Browser data cleared") }
+                },
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Icon(Icons.Filled.DeleteSweep, contentDescription = null)
+                Spacer(Modifier.size(8.dp))
+                Text("Clear browser data")
+            }
         }
+    }
+}
+
+/**
+ * Wipes everything the in-app WebView persisted: cookies, HTML5/DOM storage, cache,
+ * saved form data, HTTP-auth credentials and navigation history.
+ */
+private fun clearBrowserData(context: Context) {
+    CookieManager.getInstance().apply {
+        removeAllCookies(null)
+        flush()
+    }
+    WebStorage.getInstance().deleteAllData()
+    // Cache + history live on a WebView instance; use a throwaway one.
+    WebView(context).apply {
+        clearCache(true)
+        clearHistory()
+        destroy()
     }
 }
 
